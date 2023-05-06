@@ -1,9 +1,9 @@
 import { getChainConfig } from './chainConfig'
 import { Web3AuthNoModalOptions } from "@web3auth/no-modal";
-import { CHAIN_ID_TO_INFURA_NAME } from '../constants';
 import { CHAIN_NAMESPACES } from '@web3auth/base';
+import { ChainId } from '../types';
 
-export const getWeb3AuthConfig = (chainId?: keyof typeof CHAIN_ID_TO_INFURA_NAME) => {
+export const getWeb3AuthConfig = (chainId?: ChainId) => {
     return {
         chainConfig: chainId ? getChainConfig(chainId) : {
             chainNamespace: CHAIN_NAMESPACES.EIP155,
