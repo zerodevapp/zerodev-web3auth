@@ -1,63 +1,47 @@
 import { Web3Auth } from "@web3auth/modal";
-import { ADAPTER_EVENTS, ADAPTER_STATUS, CHAIN_NAMESPACES, CONNECTED_EVENT_DATA, SafeEventEmitterProvider, UserInfo, WALLET_ADAPTERS, log } from "@web3auth/base";
-import { OpenloginAdapter, OpenloginAdapterOptions } from "@web3auth/openlogin-adapter";
+import { ADAPTER_EVENTS, ADAPTER_STATUS, CONNECTED_EVENT_DATA, WALLET_ADAPTERS } from "@web3auth/base";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig";
 import { getProjectsConfiguration } from '@zerodevapp/sdk'
 import { getWeb3AuthConfig } from "./configs/web3AuthConfig";
-import { ChainId } from "./types";
-import { HIDDEN_LOGIN_METHODS } from "./constants";
-
-export type ExtendedWeb3AuthWithModalInitOptions = {
-    onConnect?: (userInfo: Partial<UserInfo>) => Promise<void> | void,
-    adapterSettings?: OpenloginAdapterOptions['adapterSettings']
-}
-
-export type ExtendedWeb3AuthWithModal = Web3Auth & {
-    connect: () => Promise<SafeEventEmitterProvider> | null,
-    init: (options: ExtendedWeb3AuthWithModalInitOptions) => Promise<void>
-    initModal: (options: ExtendedWeb3AuthWithModalInitOptions) => Promise<void>
-};
-type ZeroDevWeb3AuthWithModal = new (projectIds: string[], chainid?: ChainId) => ExtendedWeb3AuthWithModal
+import { ZeroDevWeb3AuthConstructor, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3AuthWithModal } from "./types";
+import { HIDDEN_LOGIN_METHODS, ZERODEV_CLIENT_ID } from "./constants";
 
 
 const proxyHandler = {
     instance: null as Web3Auth | null,
-    construct(target: typeof Web3Auth, [projectIds, chainId]: ConstructorParameters<ZeroDevWeb3AuthWithModal>): Web3Auth {
+    construct(target: typeof Web3Auth, [projectIds, chainId, options]: ConstructorParameters<ZeroDevWeb3AuthConstructor<ZeroDevWeb3AuthWithModal>>): Web3Auth {
         if (!this.instance) {
-            const instance: Web3Auth = Reflect.construct(target, [getWeb3AuthConfig(chainId)]);
+            const instance: Web3Auth = Reflect.construct(target, [getWeb3AuthConfig(chainId, options?.web3authOptions)]);
             let initiated: Promise<void> | boolean = false
 
             this.instance = new Proxy(instance, {
                 get(target, property, receiver) {
                     if (property === "init") {
                         if (initiated) {
-                            return async function (this: Web3Auth, options?: ExtendedWeb3AuthWithModalInitOptions) {
-                                if (options?.onConnect) {
+                            return async function (this: Web3Auth, initOptions?: ZeroDevWeb3AuthInitOptions) {
+                                if (initOptions?.onConnect) {
                                     instance.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
-                                        instance.getUserInfo().then(options.onConnect)
+                                        instance.getUserInfo().then(initOptions.onConnect)
                                     });
                                 }
                             }
                         }
                         initiated = true
-                        return async function (this: Web3Auth, options?: ExtendedWeb3AuthWithModalInitOptions) {
-                            const openLoginAdapterSettings = getOpenloginAdapterConfig({
-                                adapterSettings: options?.adapterSettings
-
-                            })
-                            if (openLoginAdapterSettings.adapterSettings) {
+                        return async function (this: Web3Auth, initOptions?: ZeroDevWeb3AuthInitOptions) {
+                            let openLoginAdapterSettings
+                            if (!options?.web3authOptions?.clientId || options.web3authOptions.clientId === ZERODEV_CLIENT_ID) {
                                 const { signature } = (await getProjectsConfiguration(projectIds))
-                                if (signature) {
-                                    openLoginAdapterSettings.adapterSettings.originData = {
-                                        [window.location.origin]: signature
-                                    }
-                                }
+                                openLoginAdapterSettings = getOpenloginAdapterConfig({
+                                    signature,
+                                    adapterSettings: options?.adapterSettings
+                                })
                             }
-                            const openLoginAdapter = new OpenloginAdapter(openLoginAdapterSettings)
+                            const openLoginAdapter = new OpenloginAdapter(openLoginAdapterSettings ?? options?.adapterSettings)
                             instance.configureAdapter(openLoginAdapter)
-                            if (options?.onConnect) {
+                            if (initOptions?.onConnect) {
                                 instance.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
-                                    instance.getUserInfo().then(options.onConnect)
+                                    instance.getUserInfo().then(initOptions.onConnect)
                                 });
                             }
                             if (instance.status === ADAPTER_STATUS.NOT_READY) {

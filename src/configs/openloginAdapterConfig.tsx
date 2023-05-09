@@ -12,12 +12,12 @@ function isMobileDevice(): boolean {
 
 export const getOpenloginAdapterConfig = (options?: 
   {
-    uxMode?: 'redirect' | 'popup', signature?: string, 
+    signature?: string, 
     jwt?: {verifier?: string | null}, 
     auth0?: {verifier?: string | null, clientId?: string},
     adapterSettings?: OpenloginAdapterOptions['adapterSettings']
   }) => {
-  const uxMode = options?.uxMode ?? isMobileDevice() ? 'redirect' : 'popup'
+  const uxMode = isMobileDevice() ? 'redirect' : 'popup'
   const auth0 = options?.auth0
   const jwt = options?.jwt
   const signature = options?.signature
@@ -82,9 +82,6 @@ export const getOpenloginAdapterConfig = (options?:
       verifier: jwt.verifier,
     }
   }
-  if (signature && window) {
-
-  }
   return ({
     adapterSettings: {
       ...(signature && window ? {
@@ -92,8 +89,6 @@ export const getOpenloginAdapterConfig = (options?:
           [window.location.origin]: signature
         }
       } : {}),
-      clientId:
-        process.env.REACT_APP_ZEROKIT_WEB3AUTH_CLIENT_ID ?? 'BEjNZMt6TPboj3TfHM06MP8Yxz7cKQX6eK3KZzVhrIMi7jALcZHxJv5o3fDLM7EL4QfPlf2AV_qe155vyR3QxiU',
       loginConfig,
       uxMode,
       whiteLabel: {

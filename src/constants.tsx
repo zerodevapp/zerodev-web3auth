@@ -29,3 +29,4 @@ export const CHAIN_ID_TO_NODE: { [key: number]: string} = {
   84531: 'https://icy-long-mountain.base-goerli.quiknode.pro/5b80d93e97cc9412a63c10a30841869abbef9596/'
 
 }
+export const ZERODEV_CLIENT_ID = process.env.REACT_APP_ZEROKIT_WEB3AUTH_CLIENT_ID ?? 'BEjNZMt6TPboj3TfHM06MP8Yxz7cKQX6eK3KZzVhrIMi7jALcZHxJv5o3fDLM7EL4QfPlf2AV_qe155vyR3QxiU'

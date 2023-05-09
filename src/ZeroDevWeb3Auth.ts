@@ -1,25 +1,14 @@
 import { Web3AuthNoModal } from "@web3auth/no-modal";
-import { ADAPTER_EVENTS, ADAPTER_STATUS, CHAIN_NAMESPACES, CONNECTED_EVENT_DATA, SafeEventEmitterProvider, UserInfo, WALLET_ADAPTERS, log } from "@web3auth/base";
-import { OpenloginAdapter, OpenloginAdapterOptions } from "@web3auth/openlogin-adapter";
+import { ADAPTER_EVENTS, ADAPTER_STATUS, CONNECTED_EVENT_DATA, WALLET_ADAPTERS } from "@web3auth/base";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig";
 import { getProjectsConfiguration } from '@zerodevapp/sdk'
 import { getWeb3AuthConfig } from "./configs/web3AuthConfig";
-import { ChainId } from "./types";
+import {ZeroDevWeb3Auth, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3AuthConstructor } from "./types";
 import { ProjectConfiguration } from "@zerodevapp/sdk/dist/src/types";
+import { ZERODEV_CLIENT_ID } from "./constants";
 
 export type LoginProvider = 'google' | 'facebook' | 'discord' | 'twitch' | 'twitter' | 'github' | 'jwt' | 'auth0'
-
-export type ExtendedWeb3AuthInitOptions = {
-    onConnect?: (userInfo: Partial<UserInfo>) => Promise<void> | void,
-    adapterSettings?: OpenloginAdapterOptions['adapterSettings']
-}
-
-export type ExtendedWeb3Auth = Web3AuthNoModal & {
-    connect: (loginProvider: LoginProvider, extra?: {jwt?: string}) => Promise<SafeEventEmitterProvider> | null,
-    init: (options: ExtendedWeb3AuthInitOptions) => Promise<void>
-    initModal: (options: ExtendedWeb3AuthInitOptions) => Promise<void>
-};
-type ZeroDevWeb3Auth = new (projectIds: string[], chainid?: ChainId) => ExtendedWeb3Auth
 
 const getAuth0Data = (items: ProjectConfiguration['authenticationProviders']) => {
     const item = items?.find((item) => item.provider === "auth0");
@@ -34,9 +23,9 @@ const getJWTData = (items: ProjectConfiguration['authenticationProviders']) => {
 
 const proxyHandler = {
     instance: null as Web3AuthNoModal | null,
-    construct(target: typeof Web3AuthNoModal, [projectIds, chainId]: ConstructorParameters<ZeroDevWeb3Auth>): Web3AuthNoModal {
+    construct(target: typeof Web3AuthNoModal, [projectIds, chainId, options]: ConstructorParameters<ZeroDevWeb3AuthConstructor<ZeroDevWeb3Auth>>): Web3AuthNoModal {
         if (!this.instance) {
-            const instance: Web3AuthNoModal = Reflect.construct(target, [getWeb3AuthConfig(chainId)]);
+            const instance: Web3AuthNoModal = Reflect.construct(target, [getWeb3AuthConfig(chainId), options?.web3authOptions]);
             let initiated: Promise<void> | boolean = false
             let authenticationProviders: ProjectConfiguration['authenticationProviders']
 
@@ -44,43 +33,36 @@ const proxyHandler = {
                 get(target, property, receiver) {
                     if (property === "init") {
                         if (initiated) {
-                            return async function (this: Web3AuthNoModal, options?: ExtendedWeb3AuthInitOptions) {
-                                if (options?.onConnect) {
+                            return async function (this: Web3AuthNoModal, initOptions?: ZeroDevWeb3AuthInitOptions) {
+                                if (initOptions?.onConnect) {
                                     instance.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
-                                        instance.getUserInfo().then(options.onConnect)
+                                        instance.getUserInfo().then(initOptions.onConnect)
                                     });
                                 }
                             }
                         }
                         initiated = true
-                        return async function (this: Web3AuthNoModal, options?: ExtendedWeb3AuthInitOptions) {
-                            const data = (await getProjectsConfiguration(projectIds))
-                            authenticationProviders = data.authenticationProviders
-                            const openLoginAdapterSettings = getOpenloginAdapterConfig({
-                                signature: data.signature,
-                                jwt: getJWTData(authenticationProviders),
-                                auth0: getAuth0Data(authenticationProviders),
-                                adapterSettings: options?.adapterSettings
-                            })
-                            const openLoginAdapter = new OpenloginAdapter(openLoginAdapterSettings)
+                        return async function (this: Web3AuthNoModal, initOptions?: ZeroDevWeb3AuthInitOptions) {
+                            let openLoginAdapterSettings
+                            if (!options?.web3authOptions?.clientId || options.web3authOptions.clientId === ZERODEV_CLIENT_ID) {
+                                const data = (await getProjectsConfiguration(projectIds))
+                                authenticationProviders = data.authenticationProviders
+                                openLoginAdapterSettings = getOpenloginAdapterConfig({
+                                    signature: options?.web3authOptions?.clientId ? undefined : data.signature,
+                                    jwt: getJWTData(authenticationProviders),
+                                    auth0: getAuth0Data(authenticationProviders),
+                                    adapterSettings: options?.adapterSettings
+                                })
+                            }
+                            const openLoginAdapter = new OpenloginAdapter(openLoginAdapterSettings ?? options?.adapterSettings)
                             instance.configureAdapter(openLoginAdapter)
-                            if (options?.onConnect) {
+                            if (initOptions?.onConnect) {
                                 instance.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
-                                    instance.getUserInfo().then(options.onConnect)
+                                    instance.getUserInfo().then(initOptions.onConnect)
                                 });
                             }
                             if (instance.status === ADAPTER_STATUS.NOT_READY) {
                                 initiated = Reflect.get(target ,property).apply(this)
-                                //     modalConfig: {
-                                //         [WALLET_ADAPTERS.OPENLOGIN]: {
-                                //             label: "openlogin",
-                                //             loginMethods: {
-                                //                 ...(HIDDEN_LOGIN_METHODS.reduce((hiddenLoginLoginConfig, hiddenLoginMethod) => ({...hiddenLoginLoginConfig, [hiddenLoginMethod]: {typeOfLogin: hiddenLoginMethod, showOnModal: false}}), {}))
-                                //             },
-                                //         }
-
-                                //     }
-                                // }]);
                             }
                         }
                     }
