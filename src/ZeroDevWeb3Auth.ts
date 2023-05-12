@@ -20,11 +20,11 @@ const getJWTData = (items: ProjectConfiguration['authenticationProviders']) => {
     return item ? { verifier: item.verifierId, jwtField: item.config.jwtField } : {};
 };
 
-
 const proxyHandler = {
     instance: null as Web3AuthNoModal | null,
     construct(target: typeof Web3AuthNoModal, [projectIds, chainId, options]: ConstructorParameters<ZeroDevWeb3AuthConstructor<ZeroDevWeb3Auth>>): Web3AuthNoModal {
         if (!this.instance) {
+            const eventHandlers = {onConnect: {}} as {[event: string]: {[loginProvider: string]: () => void}}
             const instance: Web3AuthNoModal = Reflect.construct(target, [getWeb3AuthConfig(chainId), options?.web3authOptions]);
             let initiated: Promise<void> | boolean = false
             let authenticationProviders: ProjectConfiguration['authenticationProviders']
@@ -33,11 +33,15 @@ const proxyHandler = {
                 get(target, property, receiver) {
                     if (property === "init") {
                         if (initiated) {
-                            return async function (this: Web3AuthNoModal, initOptions?: ZeroDevWeb3AuthInitOptions) {
+                            return async function (this: Web3AuthNoModal, loginProvider: LoginProvider, initOptions?: ZeroDevWeb3AuthInitOptions) {
                                 if (initOptions?.onConnect) {
-                                    instance.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
+                                    if (eventHandlers.onConnect[loginProvider]) {
+                                       instance.removeListener(ADAPTER_EVENTS.CONNECTED,eventHandlers['onConnect'][loginProvider])
+                                    }
+                                    eventHandlers.onConnect[loginProvider] = () => {
                                         instance.getUserInfo().then(initOptions.onConnect)
-                                    });
+                                    }
+                                    instance.on(ADAPTER_EVENTS.CONNECTED, eventHandlers.onConnect[loginProvider]);
                                 }
                             }
                         }
