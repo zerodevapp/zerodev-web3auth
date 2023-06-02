@@ -25,7 +25,7 @@ const proxyHandler = {
     construct(target: typeof Web3AuthNoModal, [projectIds, chainId, options]: ConstructorParameters<ZeroDevWeb3AuthConstructor<ZeroDevWeb3Auth>>): Web3AuthNoModal {
         if (!this.instance) {
             const eventHandlers = {onConnect: {}} as {[event: string]: {[loginProvider: string]: () => void}}
-            const instance: Web3AuthNoModal = Reflect.construct(target, [getWeb3AuthConfig(chainId), options?.web3authOptions]);
+            const instance: Web3AuthNoModal = Reflect.construct(target, [getWeb3AuthConfig(chainId, options?.web3authOptions)]);
             let initiated: Promise<void> | boolean = false
             let authenticationProviders: ProjectConfiguration['authenticationProviders']
 
@@ -48,6 +48,7 @@ const proxyHandler = {
                         initiated = true
                         return async function (this: Web3AuthNoModal, initOptions?: ZeroDevWeb3AuthInitOptions) {
                             let openLoginAdapterSettings
+                            console.log(options)
                             if (!options?.web3authOptions?.clientId || options.web3authOptions.clientId === ZERODEV_CLIENT_ID) {
                                 const data = (await getProjectsConfiguration(projectIds))
                                 authenticationProviders = data.authenticationProviders

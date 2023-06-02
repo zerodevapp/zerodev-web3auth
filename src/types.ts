@@ -8,8 +8,8 @@ import { Web3Auth } from "@web3auth/modal";
 export type ChainId = keyof typeof CHAIN_ID_TO_NODE
 
 export type ZeroDevWeb3AuthOptions = {
-    web3authOptions: Partial<Web3AuthNoModalOptions>,
-    adapterSettings: Partial<OpenloginAdapterOptions['adapterSettings']>
+    web3authOptions?: Partial<Web3AuthNoModalOptions>,
+    adapterSettings?: Partial<OpenloginAdapterOptions['adapterSettings']>
 }
 
 export type ZeroDevWeb3AuthConstructor<T> = new (projectIds: string[], chainid?: ChainId, options?: ZeroDevWeb3AuthOptions) => T
