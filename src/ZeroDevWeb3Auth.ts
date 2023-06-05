@@ -1,12 +1,13 @@
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { ADAPTER_EVENTS, ADAPTER_STATUS, CONNECTED_EVENT_DATA, WALLET_ADAPTERS } from "@web3auth/base";
-import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { OpenloginAdapter, OpenloginAdapterOptions } from "@web3auth/openlogin-adapter";
 import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig";
 import { getProjectsConfiguration } from '@zerodevapp/sdk'
 import { getWeb3AuthConfig } from "./configs/web3AuthConfig";
 import {ZeroDevWeb3Auth, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3AuthConstructor } from "./types";
 import { ProjectConfiguration } from "@zerodevapp/sdk/dist/src/types";
 import { ZERODEV_CLIENT_ID } from "./constants";
+import { isMobileDevice } from "./utilities";
 
 export type LoginProvider = 'google' | 'facebook' | 'discord' | 'twitch' | 'twitter' | 'github' | 'jwt' | 'auth0'
 
@@ -47,8 +48,13 @@ const proxyHandler = {
                         }
                         initiated = true
                         return async function (this: Web3AuthNoModal, initOptions?: ZeroDevWeb3AuthInitOptions) {
-                            let openLoginAdapterSettings
-                            console.log(options)
+                            let openLoginAdapterSettings: OpenloginAdapterOptions['adapterSettings'] = {
+                                    uxMode: isMobileDevice() ? 'redirect' : 'popup',
+                                    whiteLabel: {
+                                        name: "ZeroDev",
+                                    },
+                                    ...(options?.adapterSettings ?? {})
+                            }
                             if (!options?.web3authOptions?.clientId || options.web3authOptions.clientId === ZERODEV_CLIENT_ID) {
                                 const data = (await getProjectsConfiguration(projectIds))
                                 authenticationProviders = data.authenticationProviders
@@ -59,7 +65,7 @@ const proxyHandler = {
                                     adapterSettings: options?.adapterSettings
                                 })
                             }
-                            const openLoginAdapter = new OpenloginAdapter(openLoginAdapterSettings ?? options?.adapterSettings)
+                            const openLoginAdapter = new OpenloginAdapter({adapterSettings: openLoginAdapterSettings})
                             instance.configureAdapter(openLoginAdapter)
                             if (initOptions?.onConnect) {
                                 instance.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {

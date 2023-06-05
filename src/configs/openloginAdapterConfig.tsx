@@ -1,14 +1,4 @@
-import { OpenloginAdapterOptions, OpenloginLoginParams } from '@web3auth/openlogin-adapter';
-
-function isMobileDevice(): boolean {
-  if (typeof window === 'undefined' || !window.navigator) return false;
-  const userAgent = navigator.userAgent;
-
-  // Regex to check for common mobile device identifiers in the user agent string
-  const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-
-  return mobileRegex.test(userAgent);
-}
+import { OpenloginAdapterOptions } from '@web3auth/openlogin-adapter';
 
 export const getOpenloginAdapterConfig = (options?: 
   {
@@ -17,7 +7,6 @@ export const getOpenloginAdapterConfig = (options?:
     auth0?: {verifier?: string | null, clientId?: string},
     adapterSettings?: OpenloginAdapterOptions['adapterSettings']
   }) => {
-  const uxMode = isMobileDevice() ? 'redirect' : 'popup'
   const auth0 = options?.auth0
   const jwt = options?.jwt
   const signature = options?.signature
@@ -83,19 +72,13 @@ export const getOpenloginAdapterConfig = (options?:
     }
   }
   return ({
-    adapterSettings: {
       ...(signature && window ? {
         originData: {
           [window.location.origin]: signature
         }
       } : {}),
       loginConfig,
-      uxMode,
-      whiteLabel: {
-        name: "ZeroDev",
-      },
       network: process.env.REACT_APP_ZEROKIT_WEB3AUTH_NETWORK ?? 'cyan',
       ...options?.adapterSettings
-    },
-  }) as OpenloginAdapterOptions
+  }) as OpenloginAdapterOptions['adapterSettings']
 };
