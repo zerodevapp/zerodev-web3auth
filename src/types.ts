@@ -27,3 +27,13 @@ export type ZeroDevWeb3AuthGeneric<T> = T & {
 
 export type ZeroDevWeb3Auth = ZeroDevWeb3AuthGeneric<Web3AuthNoModal>
 export type ZeroDevWeb3AuthWithModal = ZeroDevWeb3AuthGeneric<Web3Auth>
+
+export interface ProjectConfiguration {
+    projects: Array<{id: string, chainId: number}>
+    signature?: string
+    authenticationProviders: Array<{
+      config: any
+      provider: string
+      verifierId: string | null
+    }>
+}

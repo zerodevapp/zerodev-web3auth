@@ -2,12 +2,10 @@ import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { ADAPTER_EVENTS, ADAPTER_STATUS, CONNECTED_EVENT_DATA, WALLET_ADAPTERS } from "@web3auth/base";
 import { OpenloginAdapter, OpenloginAdapterOptions } from "@web3auth/openlogin-adapter";
 import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig";
-import { getProjectsConfiguration } from '@zerodevapp/sdk'
 import { getWeb3AuthConfig } from "./configs/web3AuthConfig";
-import {ZeroDevWeb3Auth, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3AuthConstructor } from "./types";
-import { ProjectConfiguration } from "@zerodevapp/sdk/dist/src/types";
+import {ZeroDevWeb3Auth, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3AuthConstructor, ProjectConfiguration } from "./types";
 import { ZERODEV_CLIENT_ID } from "./constants";
-import { isMobileDevice } from "./utilities";
+import { getProjectsConfiguration, isMobileDevice } from "./utilities";
 
 export type LoginProvider = 'google' | 'facebook' | 'discord' | 'twitch' | 'twitter' | 'github' | 'jwt' | 'auth0'
 

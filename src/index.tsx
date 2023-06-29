@@ -5,6 +5,7 @@ export * from './types'
 import ZeroDevWeb3AuthWithModal from "./ZeroDevWeb3AuthWithModal";
 import ZeroDevWeb3Auth from "./ZeroDevWeb3Auth";
 export type { LoginProvider } from "./ZeroDevWeb3Auth";
+export { getProjectsConfiguration } from "./utilities";
 export {
     ZeroDevWeb3Auth,
     ZeroDevWeb3AuthWithModal,

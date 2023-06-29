@@ -2,11 +2,10 @@ import { Web3Auth } from "@web3auth/modal";
 import { ADAPTER_EVENTS, ADAPTER_STATUS, CONNECTED_EVENT_DATA, WALLET_ADAPTERS } from "@web3auth/base";
 import { OpenloginAdapter, OpenloginAdapterOptions } from "@web3auth/openlogin-adapter";
 import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig";
-import { getProjectsConfiguration } from '@zerodevapp/sdk'
 import { getWeb3AuthConfig } from "./configs/web3AuthConfig";
 import { ZeroDevWeb3AuthConstructor, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3AuthWithModal } from "./types";
 import { HIDDEN_LOGIN_METHODS, ZERODEV_CLIENT_ID } from "./constants";
-import { isMobileDevice } from "./utilities";
+import { getProjectsConfiguration, isMobileDevice } from "./utilities";
 
 
 const proxyHandler = {

@@ -9,6 +9,8 @@ export const HIDDEN_LOGIN_METHODS = [
   'email_passwordless'
 ]
 
+export const BACKEND_URL = process.env.REACT_APP_ZERODEV_BACKEND_URL ?? 'https://backend-vikp.onrender.com'
+
 export const INFURA_API_KEY = 'f36f7f706a58477884ce6fe89165666c'
 
 export const CHAIN_ID_TO_NODE: { [key: number]: string} = {
