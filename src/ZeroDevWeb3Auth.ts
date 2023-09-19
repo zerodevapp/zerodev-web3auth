@@ -3,9 +3,11 @@ import { ADAPTER_EVENTS, ADAPTER_STATUS, CONNECTED_EVENT_DATA, WALLET_ADAPTERS }
 import { OpenloginAdapter, OpenloginAdapterOptions } from "@web3auth/openlogin-adapter";
 import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig";
 import { getWeb3AuthConfig } from "./configs/web3AuthConfig";
-import {ZeroDevWeb3Auth, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3AuthConstructor, ProjectConfiguration } from "./types";
+import { ZeroDevWeb3AuthInitOptions, ProjectConfiguration, ChainId, ZeroDevWeb3AuthOptions, ZeroDevWeb3AuthEvents } from "./types";
 import { ZERODEV_CLIENT_ID } from "./constants";
 import { getProjectsConfiguration, isMobileDevice } from "./utilities";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { getChainConfig } from "./configs/chainConfig";
 
 export type LoginProvider = 'google' | 'facebook' | 'discord' | 'twitch' | 'twitter' | 'github' | 'jwt' | 'auth0'
 
@@ -19,106 +21,116 @@ const getJWTData = (items: ProjectConfiguration['authenticationProviders']) => {
     return item ? { verifier: item.verifierId, jwtField: item.config.jwtField } : {};
 };
 
-const proxyHandler = {
-    instance: null as Web3AuthNoModal | null,
-    construct(target: typeof Web3AuthNoModal, [projectIds, chainId, options]: ConstructorParameters<ZeroDevWeb3AuthConstructor<ZeroDevWeb3Auth>>): Web3AuthNoModal {
-        if (!this.instance) {
-            const eventHandlers = {onConnect: {}} as {[event: string]: {[loginProvider: string]: () => void}}
-            const instance: Web3AuthNoModal = Reflect.construct(target, [getWeb3AuthConfig(chainId, options?.web3authOptions)]);
-            let initiated: Promise<void> | boolean = false
-            let authenticationProviders: ProjectConfiguration['authenticationProviders']
+class ZeroDevWeb3Auth extends Web3AuthNoModal {
+    static zeroDevWeb3Auth: ZeroDevWeb3Auth
+    eventHandlers: {[event in ZeroDevWeb3AuthEvents]: {[loginProvider: string]: () => void}} = {onConnect: {}}
+    initiated: boolean | Promise<void> = false
+    zeroDevOptions: ZeroDevWeb3AuthOptions = {}
+    projectIds: string[] = []
+    chainId?: ChainId
+    authenticationProviders: ProjectConfiguration['authenticationProviders'] = []
 
-            this.instance = new Proxy(instance, {
-                get(target, property, receiver) {
-                    if (property === "init") {
-                        if (initiated) {
-                            return async function (this: Web3AuthNoModal, loginProvider: LoginProvider, initOptions?: ZeroDevWeb3AuthInitOptions) {
-                                if (initOptions?.onConnect) {
-                                    if (eventHandlers.onConnect[loginProvider]) {
-                                       instance.removeListener(ADAPTER_EVENTS.CONNECTED,eventHandlers['onConnect'][loginProvider])
-                                    }
-                                    eventHandlers.onConnect[loginProvider] = () => {
-                                        instance.getUserInfo().then(initOptions.onConnect)
-                                    }
-                                    instance.on(ADAPTER_EVENTS.CONNECTED, eventHandlers.onConnect[loginProvider]);
-                                }
-                            }
-                        }
-                        initiated = true
-                        return async function (this: Web3AuthNoModal, initOptions?: ZeroDevWeb3AuthInitOptions) {
-                            let openLoginAdapterSettings: OpenloginAdapterOptions['adapterSettings'] = {
-                                    uxMode: isMobileDevice() ? 'redirect' : 'popup',
-                                    whiteLabel: {
-                                        name: "ZeroDev",
-                                    },
-                                    ...(options?.adapterSettings ?? {})
-                            }
-                            if (!options?.web3authOptions?.clientId || options.web3authOptions.clientId === ZERODEV_CLIENT_ID) {
-                                const data = (await getProjectsConfiguration(projectIds))
-                                authenticationProviders = data.authenticationProviders
-                                openLoginAdapterSettings = getOpenloginAdapterConfig({
-                                    signature: options?.web3authOptions?.clientId ? undefined : data.signature,
-                                    jwt: getJWTData(authenticationProviders),
-                                    auth0: getAuth0Data(authenticationProviders),
-                                    adapterSettings: options?.adapterSettings
-                                })
-                            }
-                            const openLoginAdapter = new OpenloginAdapter({adapterSettings: openLoginAdapterSettings})
-                            instance.configureAdapter(openLoginAdapter)
-                            if (initOptions?.onConnect) {
-                                instance.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
-                                    instance.getUserInfo().then(initOptions.onConnect)
-                                });
-                            }
-                            if (instance.status === ADAPTER_STATUS.NOT_READY) {
-                                initiated = Reflect.get(target ,property).apply(this)
-                            }
-                        }
-                    }
-                    if (property === "connect") {
-                        return async function (this: Web3AuthNoModal, loginProvider: LoginProvider, extra?: {jwt: string} ) {
-                            if (instance.status === 'connecting') {
-                                instance.status = 'ready'
-                                instance.walletAdapters[WALLET_ADAPTERS.OPENLOGIN].status = 'ready'
-                            }
-                            // Checks 5 times in a period of a second if initiated changed
-                            for (let i = 1; i <= 5; i++) {
-                                if (initiated instanceof Promise) {
-                                    await initiated
-                                    break;
-                                }
-                                await new Promise((resolve) => setTimeout(resolve, 5000 / 5));
-                            }
-                            if (instance.status !== 'connected') {
-                                const jwtOptions: {[key: string]: any} = {}
-                                if (loginProvider === 'jwt') {
-                                    jwtOptions['extraLoginOptions'] = {
-                                        verifierIdField: getJWTData(authenticationProviders).jwtField,
-                                        id_token: extra?.jwt,
-                                    }
-                                }
-                                if (loginProvider === 'auth0') {
-                                    jwtOptions['extraLoginOptions'] = {
-                                        verifierIdField: "name",
-                                        domain: getAuth0Data(authenticationProviders).domain,
-                                    }
-                                }
-                                return Reflect.get(target, "connectTo").apply(this, [WALLET_ADAPTERS.OPENLOGIN, {
-                                    loginProvider,
-                                    ...jwtOptions
-                                }]);
-                            }
-                            return instance.provider
-                        }
-                    }
-                    return Reflect.get(target, property);
-                },
-            });
+    constructor(projectIds: string[], chainId?: ChainId, zeroDevOptions?: ZeroDevWeb3AuthOptions) {
+        if (ZeroDevWeb3Auth.zeroDevWeb3Auth) return ZeroDevWeb3Auth.zeroDevWeb3Auth
+        super(getWeb3AuthConfig(chainId, zeroDevOptions?.web3authOptions))
+        this.chainId = chainId
+        this.projectIds = projectIds
+        this.zeroDevOptions = zeroDevOptions ?? {}
+        this.eventHandlers = {
+            onConnect: {},
         }
-        return this.instance;
-    },
-};
+    }
 
-const ZeroDevWeb3Auth = new Proxy(Web3AuthNoModal, proxyHandler) as unknown as ZeroDevWeb3Auth;
+    async initialize(initOptions: ZeroDevWeb3AuthInitOptions, loginProvider: LoginProvider) {
+        if (this.initiated) {
+            if (initOptions?.onConnect) {
+                if (this.eventHandlers.onConnect[loginProvider]) {
+                    this.removeListener(ADAPTER_EVENTS.CONNECTED, this.eventHandlers.onConnect[loginProvider])
+                }
+                this.eventHandlers.onConnect[loginProvider] = () => {
+                    this.getUserInfo().then(initOptions.onConnect)
+                }
+                this.on(ADAPTER_EVENTS.CONNECTED, this.eventHandlers.onConnect[loginProvider]);
+            }
+        } else {
+            this.initiated = true
+            let openLoginAdapterSettings: OpenloginAdapterOptions['adapterSettings'] = {
+                    uxMode: isMobileDevice() ? 'redirect' : 'popup',
+                    whiteLabel: {
+                        appName: "ZeroDev",
+                    },
+                    ...(this.zeroDevOptions?.adapterSettings ?? {})
+            }
+            if (!this.zeroDevOptions?.web3authOptions?.clientId || this.zeroDevOptions.web3authOptions.clientId === ZERODEV_CLIENT_ID) {
+                const data = (await getProjectsConfiguration(this.projectIds))
+                this.authenticationProviders = data.authenticationProviders
+                openLoginAdapterSettings = getOpenloginAdapterConfig({
+                    signature: this.zeroDevOptions?.web3authOptions?.clientId ? undefined : data.signature,
+                    jwt: getJWTData(this.authenticationProviders),
+                    auth0: getAuth0Data(this.authenticationProviders),
+                    adapterSettings: openLoginAdapterSettings
+                })
+            }
+            if (!this.chainId) {
+                this.chainId = (await getProjectsConfiguration(this.projectIds)).projects[0].chainId
+            }
+            const openLoginAdapter = new OpenloginAdapter({
+                adapterSettings: openLoginAdapterSettings,
+                privateKeyProvider: new EthereumPrivateKeyProvider({ 
+                    config: { 
+                        //@ts-expect-error
+                        chainConfig: getChainConfig(this.chainId!)
+                    } 
+                })
+            })
+            this.configureAdapter(openLoginAdapter)
+            if (initOptions?.onConnect) {
+                this.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
+                    this.getUserInfo().then(initOptions.onConnect)
+                });
+            }
+            if (this.status === ADAPTER_STATUS.NOT_READY) {
+                this.initiated = this.init()
+            }
+        }
+    }
+
+    async login(loginProvider: LoginProvider, extra?: {jwt: string} ) {
+        if (this.status === 'connecting') {
+            this.status = 'ready'
+            this.walletAdapters[WALLET_ADAPTERS.OPENLOGIN].status = 'ready'
+        }
+        // Checks 5 times in a period of a second if initiated changed
+        for (let i = 1; i <= 5; i++) {
+            if (this.initiated instanceof Promise) {
+                await this.initiated
+                break;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 5000 / 5));
+        }
+        if (this.status !== 'connected') {
+            const jwtOptions: {[key: string]: any} = {}
+            if (loginProvider === 'jwt') {
+                jwtOptions['extraLoginOptions'] = {
+                    verifierIdField: getJWTData(this.authenticationProviders).jwtField,
+                    id_token: extra?.jwt,
+                }
+            }
+            if (loginProvider === 'auth0') {
+                jwtOptions['extraLoginOptions'] = {
+                    verifierIdField: "name",
+                    domain: getAuth0Data(this.authenticationProviders).domain,
+                }
+            }
+            return this.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+                loginProvider,
+                ...jwtOptions
+
+            })
+        }
+        return this.provider
+    }
+
+}
 
 export default ZeroDevWeb3Auth
