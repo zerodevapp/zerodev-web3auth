@@ -1,5 +1,5 @@
-import { BACKEND_URL } from "./constants";
-import { ProjectConfiguration } from "./types";
+import { BACKEND_URL } from "./constants.js";
+import { ProjectConfiguration } from "./types.js";
 
 export function isMobileDevice(): boolean {
   if (typeof window === 'undefined' || !window.navigator) return false;

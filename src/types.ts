@@ -1,5 +1,5 @@
 import { Web3AuthNoModalOptions } from "@web3auth/no-modal";
-import { CHAIN_ID_TO_NODE } from "./constants";
+import { CHAIN_ID_TO_NODE } from "./constants.js";
 import { OpenloginAdapterOptions } from "@web3auth/openlogin-adapter";
 import { UserInfo } from "@web3auth/base";
 

@@ -1,13 +1,12 @@
 import { Web3AuthNoModal } from "@web3auth/no-modal";
-import { ADAPTER_EVENTS, ADAPTER_STATUS, CONNECTED_EVENT_DATA, WALLET_ADAPTERS } from "@web3auth/base";
 import { OpenloginAdapter, OpenloginAdapterOptions } from "@web3auth/openlogin-adapter";
-import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig";
-import { getWeb3AuthConfig } from "./configs/web3AuthConfig";
-import { ZeroDevWeb3AuthInitOptions, ProjectConfiguration, ChainId, ZeroDevWeb3AuthOptions, ZeroDevWeb3AuthEvents } from "./types";
-import { ZERODEV_CLIENT_ID } from "./constants";
-import { getProjectsConfiguration, isMobileDevice } from "./utilities";
+import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig.js";
+import { getWeb3AuthConfig } from "./configs/web3AuthConfig.js";
+import { ZeroDevWeb3AuthInitOptions, ProjectConfiguration, ChainId, ZeroDevWeb3AuthOptions, ZeroDevWeb3AuthEvents } from "./types.js";
+import { ZERODEV_CLIENT_ID } from "./constants.js";
+import { getProjectsConfiguration, isMobileDevice } from "./utilities.js";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { getChainConfig } from "./configs/chainConfig";
+import { getChainConfig } from "./configs/chainConfig.js";
 
 export type LoginProvider = 'google' | 'facebook' | 'discord' | 'twitch' | 'twitter' | 'github' | 'jwt' | 'auth0'
 
@@ -45,12 +44,12 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
         if (this.initiated) {
             if (initOptions?.onConnect) {
                 if (this.eventHandlers.onConnect[loginProvider]) {
-                    this.removeListener(ADAPTER_EVENTS.CONNECTED, this.eventHandlers.onConnect[loginProvider])
+                    this.removeListener('connected', this.eventHandlers.onConnect[loginProvider])
                 }
                 this.eventHandlers.onConnect[loginProvider] = () => {
                     this.getUserInfo().then(initOptions.onConnect)
                 }
-                this.on(ADAPTER_EVENTS.CONNECTED, this.eventHandlers.onConnect[loginProvider]);
+                this.on('connected', this.eventHandlers.onConnect[loginProvider]);
             }
         } else {
             this.initiated = true
@@ -85,11 +84,11 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
             })
             this.configureAdapter(openLoginAdapter)
             if (initOptions?.onConnect) {
-                this.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
+                this.on('connected', () => {
                     this.getUserInfo().then(initOptions.onConnect)
                 });
             }
-            if (this.status === ADAPTER_STATUS.NOT_READY) {
+            if (this.status === 'not_ready') {
                 this.initiated = this.init()
             }
         }
@@ -98,7 +97,7 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
     async login(loginProvider: LoginProvider, extra?: {jwt: string} ) {
         if (this.status === 'connecting') {
             this.status = 'ready'
-            this.walletAdapters[WALLET_ADAPTERS.OPENLOGIN].status = 'ready'
+            this.walletAdapters['openlogin'].status = 'ready'
         }
         // Checks 5 times in a period of a second if initiated changed
         for (let i = 1; i <= 5; i++) {
@@ -122,7 +121,7 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
                     domain: getAuth0Data(this.authenticationProviders).domain,
                 }
             }
-            return this.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+            return this.connectTo('openlogin', {
                 loginProvider,
                 ...jwtOptions
 

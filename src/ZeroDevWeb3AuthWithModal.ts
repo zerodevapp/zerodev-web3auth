@@ -1,13 +1,12 @@
 import { Web3Auth } from "@web3auth/modal";
-import { ADAPTER_EVENTS, ADAPTER_STATUS, CONNECTED_EVENT_DATA, WALLET_ADAPTERS  } from "@web3auth/base";
 import { OpenloginAdapter, OpenloginAdapterOptions } from "@web3auth/openlogin-adapter";
-import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig";
-import { getWeb3AuthConfig } from "./configs/web3AuthConfig";
-import { HIDDEN_LOGIN_METHODS, ZERODEV_CLIENT_ID } from "./constants";
-import { getProjectsConfiguration, isMobileDevice } from "./utilities";
+import { getOpenloginAdapterConfig } from "./configs/openloginAdapterConfig.js";
+import { getWeb3AuthConfig } from "./configs/web3AuthConfig.js";
+import { HIDDEN_LOGIN_METHODS, ZERODEV_CLIENT_ID } from "./constants.js";
+import { getProjectsConfiguration, isMobileDevice } from "./utilities.js";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { getChainConfig } from "./configs/chainConfig";
-import { ChainId, ZeroDevWeb3AuthEvents, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3AuthOptions } from "./types";
+import { getChainConfig } from "./configs/chainConfig.js";
+import { ChainId, ZeroDevWeb3AuthEvents, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3AuthOptions } from "./types.js";
 
 
 class ZeroDevWeb3AuthWithModal extends Web3Auth {
@@ -32,7 +31,7 @@ class ZeroDevWeb3AuthWithModal extends Web3Auth {
     async initialize(initOptions: ZeroDevWeb3AuthInitOptions) {
         if (this.initiated) {
             if (initOptions?.onConnect) {
-                this.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
+                this.on('connected', () => {
                     this.getUserInfo().then(initOptions.onConnect)
                 });
             }
@@ -67,14 +66,14 @@ class ZeroDevWeb3AuthWithModal extends Web3Auth {
             })
             this.configureAdapter(openLoginAdapter)
             if (initOptions?.onConnect) {
-                this.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
+                this.on('connected', () => {
                     this.getUserInfo().then(initOptions.onConnect)
                 });
             }
-            if (this.status === ADAPTER_STATUS.NOT_READY) {
+            if (this.status === 'not_ready') {
                 this.initiated = this.initModal({
                     modalConfig: {
-                        [WALLET_ADAPTERS.OPENLOGIN]: {
+                        ['openlogin']: {
                             label: "openlogin",
                             loginMethods: {
                                 ...(HIDDEN_LOGIN_METHODS.reduce((hiddenLoginLoginConfig, hiddenLoginMethod) => ({...hiddenLoginLoginConfig, [hiddenLoginMethod]: {typeOfLogin: hiddenLoginMethod, showOnModal: false}}), {}))
@@ -90,7 +89,7 @@ class ZeroDevWeb3AuthWithModal extends Web3Auth {
     async login() {
         if (this.status === 'connecting') {
             this.status = 'ready'
-            this.walletAdapters[WALLET_ADAPTERS.OPENLOGIN].status = 'ready'
+            this.walletAdapters['openlogin'].status = 'ready'
         }
         // Checks 5 times in a period of a second if initiated changed
         for (let i = 1; i <= 5; i++) {
