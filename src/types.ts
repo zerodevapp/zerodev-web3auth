@@ -8,6 +8,7 @@ export type ChainId = keyof typeof CHAIN_ID_TO_NODE
 export type ZeroDevWeb3AuthOptions = {
     web3authOptions?: Partial<Web3AuthNoModalOptions>,
     adapterSettings?: Partial<OpenloginAdapterOptions['adapterSettings']>
+    loginSettings?: Partial<OpenloginAdapterOptions['loginSettings']>
 }
 
 export type ZeroDevWeb3AuthInitOptions = {
@@ -15,12 +16,12 @@ export type ZeroDevWeb3AuthInitOptions = {
 }
 
 export interface ProjectConfiguration {
-    projects: Array<{id: string, chainId: number}>
+    projects: Array<{ id: string, chainId: number }>
     signature?: string
     authenticationProviders: Array<{
-      config: any
-      provider: string
-      verifierId: string | null
+        config: any
+        provider: string
+        verifierId: string | null
     }>
 }
 

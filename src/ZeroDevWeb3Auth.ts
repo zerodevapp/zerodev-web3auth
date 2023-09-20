@@ -12,7 +12,7 @@ export type LoginProvider = 'google' | 'facebook' | 'discord' | 'twitch' | 'twit
 
 const getAuth0Data = (items: ProjectConfiguration['authenticationProviders']) => {
     const item = items?.find((item) => item.provider === "auth0");
-    return item ? { verifier: item.verifierId, clientId: item.config.auth0ClientId, domain: item.config.auth0Url  } : {};
+    return item ? { verifier: item.verifierId, clientId: item.config.auth0ClientId, domain: item.config.auth0Url } : {};
 };
 
 const getJWTData = (items: ProjectConfiguration['authenticationProviders']) => {
@@ -22,7 +22,7 @@ const getJWTData = (items: ProjectConfiguration['authenticationProviders']) => {
 
 class ZeroDevWeb3Auth extends Web3AuthNoModal {
     static zeroDevWeb3Auth: ZeroDevWeb3Auth
-    eventHandlers: {[event in ZeroDevWeb3AuthEvents]: {[loginProvider: string]: () => void}} = {onConnect: {}}
+    eventHandlers: { [event in ZeroDevWeb3AuthEvents]: { [loginProvider: string]: () => void } } = { onConnect: {} }
     initiated: boolean | Promise<void> = false
     zeroDevOptions: ZeroDevWeb3AuthOptions = {}
     projectIds: string[] = []
@@ -54,11 +54,15 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
         } else {
             this.initiated = true
             let openLoginAdapterSettings: OpenloginAdapterOptions['adapterSettings'] = {
-                    uxMode: isMobileDevice() ? 'redirect' : 'popup',
-                    whiteLabel: {
-                        appName: "ZeroDev",
-                    },
-                    ...(this.zeroDevOptions?.adapterSettings ?? {})
+                uxMode: isMobileDevice() ? 'redirect' : 'popup',
+                whiteLabel: {
+                    appName: "ZeroDev",
+                },
+                ...(this.zeroDevOptions?.adapterSettings ?? {})
+            }
+            let openLoginLoginSettings: OpenloginAdapterOptions['loginSettings'] = {
+                mfaLevel: 'default',
+                ...(this.zeroDevOptions?.loginSettings ?? {})
             }
             if (!this.zeroDevOptions?.web3authOptions?.clientId || this.zeroDevOptions.web3authOptions.clientId === ZERODEV_CLIENT_ID) {
                 const data = (await getProjectsConfiguration(this.projectIds))
@@ -74,12 +78,13 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
                 this.chainId = (await getProjectsConfiguration(this.projectIds)).projects[0].chainId
             }
             const openLoginAdapter = new OpenloginAdapter({
+                loginSettings: openLoginLoginSettings,
                 adapterSettings: openLoginAdapterSettings,
-                privateKeyProvider: new EthereumPrivateKeyProvider({ 
-                    config: { 
+                privateKeyProvider: new EthereumPrivateKeyProvider({
+                    config: {
                         //@ts-expect-error
                         chainConfig: getChainConfig(this.chainId!)
-                    } 
+                    }
                 })
             })
             this.configureAdapter(openLoginAdapter)
@@ -94,7 +99,7 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
         }
     }
 
-    async login(loginProvider: LoginProvider, extra?: {jwt: string} ) {
+    async login(loginProvider: LoginProvider, extra?: { jwt: string }) {
         if (this.status === 'connecting') {
             this.status = 'ready'
             this.walletAdapters['openlogin'].status = 'ready'
@@ -108,7 +113,7 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
             await new Promise((resolve) => setTimeout(resolve, 5000 / 5));
         }
         if (this.status !== 'connected') {
-            const jwtOptions: {[key: string]: any} = {}
+            const jwtOptions: { [key: string]: any } = {}
             if (loginProvider === 'jwt') {
                 jwtOptions['extraLoginOptions'] = {
                     verifierIdField: getJWTData(this.authenticationProviders).jwtField,

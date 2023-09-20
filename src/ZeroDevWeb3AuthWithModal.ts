@@ -11,7 +11,7 @@ import { ChainId, ZeroDevWeb3AuthEvents, ZeroDevWeb3AuthInitOptions, ZeroDevWeb3
 
 class ZeroDevWeb3AuthWithModal extends Web3Auth {
     static zeroDevWeb3AuthWithModal: ZeroDevWeb3AuthWithModal
-    eventHandlers: {[event in ZeroDevWeb3AuthEvents]: {[loginProvider: string]: () => void}} = {onConnect: {}}
+    eventHandlers: { [event in ZeroDevWeb3AuthEvents]: { [loginProvider: string]: () => void } } = { onConnect: {} }
     initiated: boolean | Promise<void> = false
     zeroDevOptions: ZeroDevWeb3AuthOptions = {}
     projectIds: string[] = []
@@ -38,12 +38,16 @@ class ZeroDevWeb3AuthWithModal extends Web3Auth {
         } else {
             this.initiated = true
             let openLoginAdapterSettings: OpenloginAdapterOptions['adapterSettings'] = {
-                    uxMode: isMobileDevice() ? 'redirect' : 'popup',
-                    whiteLabel: {
-                        appName: "ZeroDev",
-                        defaultLanguage: 'en'
-                    },
-                    ...(this.zeroDevOptions?.adapterSettings ?? {})
+                uxMode: isMobileDevice() ? 'redirect' : 'popup',
+                whiteLabel: {
+                    appName: "ZeroDev",
+                    defaultLanguage: 'en'
+                },
+                ...(this.zeroDevOptions?.adapterSettings ?? {})
+            }
+            let openLoginLoginSettings: OpenloginAdapterOptions['loginSettings'] = {
+                mfaLevel: 'default',
+                ...(this.zeroDevOptions?.loginSettings ?? {})
             }
             if (!this.zeroDevOptions?.web3authOptions?.clientId || this.zeroDevOptions.web3authOptions.clientId === ZERODEV_CLIENT_ID) {
                 const { signature } = (await getProjectsConfiguration(this.projectIds))
@@ -56,12 +60,13 @@ class ZeroDevWeb3AuthWithModal extends Web3Auth {
                 this.chainId = (await getProjectsConfiguration(this.projectIds)).projects[0].chainId
             }
             const openLoginAdapter = new OpenloginAdapter({
+                loginSettings: openLoginLoginSettings,
                 adapterSettings: openLoginAdapterSettings,
-                privateKeyProvider: new EthereumPrivateKeyProvider({ 
-                    config: { 
+                privateKeyProvider: new EthereumPrivateKeyProvider({
+                    config: {
                         //@ts-expect-error
-                        chainConfig: getChainConfig(this.chainId!) 
-                    } 
+                        chainConfig: getChainConfig(this.chainId!)
+                    }
                 })
             })
             this.configureAdapter(openLoginAdapter)
@@ -76,7 +81,7 @@ class ZeroDevWeb3AuthWithModal extends Web3Auth {
                         ['openlogin']: {
                             label: "openlogin",
                             loginMethods: {
-                                ...(HIDDEN_LOGIN_METHODS.reduce((hiddenLoginLoginConfig, hiddenLoginMethod) => ({...hiddenLoginLoginConfig, [hiddenLoginMethod]: {typeOfLogin: hiddenLoginMethod, showOnModal: false}}), {}))
+                                ...(HIDDEN_LOGIN_METHODS.reduce((hiddenLoginLoginConfig, hiddenLoginMethod) => ({ ...hiddenLoginLoginConfig, [hiddenLoginMethod]: { typeOfLogin: hiddenLoginMethod, showOnModal: false } }), {}))
                             },
                         }
 
