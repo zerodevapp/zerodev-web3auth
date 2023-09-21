@@ -1,6 +1,6 @@
 {
   "name": "@zerodev/web3auth",
-  "version": "4.1.2",
+  "version": "4.1.5",
   "files": [
     "dist"
   ],
@@ -26,11 +26,11 @@
   },
   "dependencies": {
     "@web3auth/base": "7.0.1",
-    "@web3auth/modal": "7.0.1",
-    "@web3auth/no-modal": "7.0.1",
-    "@web3auth/openlogin-adapter": "7.0.1",
-    "@web3auth/ethereum-provider": "7.0.1",
-    "@zerodev/sdk": "4.0.17"
+    "@web3auth/modal": "7.0.2",
+    "@web3auth/no-modal": "7.0.2-beta.0",
+    "@web3auth/openlogin-adapter": "7.0.2-beta.0",
+    "@web3auth/ethereum-provider": "7.0.2",
+    "@zerodev/sdk": "4.0.18"
   },
   "author": "",
   "license": "ISC",

@@ -72,7 +72,7 @@ export const getOpenloginAdapterConfig = (options?:
     }
   }
   return ({
-      ...(signature && window ? {
+      ...(signature && typeof window !== 'undefined' ? {
         originData: {
           [window.location.origin]: signature
         }
