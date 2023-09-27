@@ -16,6 +16,7 @@ export type ZeroDevWeb3AuthInitOptions = {
 
 export interface ProjectConfiguration {
     projects: Array<{id: string, chainId: number}>
+    newSignature?: string
     signature?: string
     authenticationProviders: Array<{
       config: any

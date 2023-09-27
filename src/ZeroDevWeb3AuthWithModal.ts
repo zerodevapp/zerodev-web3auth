@@ -46,9 +46,9 @@ class ZeroDevWeb3AuthWithModal extends Web3Auth {
                     ...(this.zeroDevOptions?.adapterSettings ?? {})
             }
             if (!this.zeroDevOptions?.web3authOptions?.clientId || this.zeroDevOptions.web3authOptions.clientId === ZERODEV_CLIENT_ID) {
-                const { signature } = (await getProjectsConfiguration(this.projectIds))
+                const { signature, newSignature } = (await getProjectsConfiguration(this.projectIds))
                 openLoginAdapterSettings = getOpenloginAdapterConfig({
-                    signature: this.zeroDevOptions?.web3authOptions?.clientId ? undefined : signature,
+                    signature: this.zeroDevOptions?.web3authOptions?.clientId ? undefined : newSignature,
                     adapterSettings: openLoginAdapterSettings
                 })
             }

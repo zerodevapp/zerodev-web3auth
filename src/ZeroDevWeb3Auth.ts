@@ -64,7 +64,7 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
                 const data = (await getProjectsConfiguration(this.projectIds))
                 this.authenticationProviders = data.authenticationProviders
                 openLoginAdapterSettings = getOpenloginAdapterConfig({
-                    signature: this.zeroDevOptions?.web3authOptions?.clientId ? undefined : data.signature,
+                    signature: this.zeroDevOptions?.web3authOptions?.clientId ? undefined : data.newSignature,
                     jwt: getJWTData(this.authenticationProviders),
                     auth0: getAuth0Data(this.authenticationProviders),
                     adapterSettings: openLoginAdapterSettings
