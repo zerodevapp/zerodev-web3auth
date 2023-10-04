@@ -1064,7 +1064,7 @@
   dependencies:
     "@web3auth/base" "^7.0.1"
 
-"@web3auth/base-plugin@^7.0.0-beta.0", "@web3auth/base-plugin@^7.0.1":
+"@web3auth/base-plugin@^7.0.1":
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@web3auth/base-plugin/-/base-plugin-7.0.1.tgz#a59de3b9c42fea9ad31438a55986edd28104203b"
   integrity sha512-BAwqZcEoDClXGIStAjhWsf+lguzifZ8hYz/wvcwE0ZOfhkXVNls96wSr/C7Cx+s94Hir8kN1zM2OROBM8f7YNQ==
@@ -1082,17 +1082,6 @@
     "@web3auth/base" "^7.0.1"
     json-rpc-random-id "^1.0.1"
 
-"@web3auth/base-provider@^7.0.2-beta.0":
-  version "7.0.2-beta.0"
-  resolved "https://registry.yarnpkg.com/@web3auth/base-provider/-/base-provider-7.0.2-beta.0.tgz#353d417e3eabdffcc0990d1cc04e88f3ed6d56bf"
-  integrity sha512-4CIysgZ3/SuOLDB5Z2itVioEO4iyMuI/UdKZhH/zq4OF6UGE+yCGTZcdBYgF5KxiY+zDwJBWW2Vl3oeGOaarIA==
-  dependencies:
-    "@metamask/rpc-errors" "^6.0.0"
-    "@toruslabs/base-controllers" "^4.0.1"
-    "@toruslabs/openlogin-jrpc" "^5.0.2"
-    "@web3auth/base" "^7.0.0-beta.0"
-    json-rpc-random-id "^1.0.1"
-
 "@web3auth/base-solana-adapter@^7.0.1":
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@web3auth/base-solana-adapter/-/base-solana-adapter-7.0.1.tgz#3632bcc53edb6407af327aeeec80828d3273055f"
@@ -1101,7 +1090,7 @@
     "@web3auth/base" "^7.0.1"
     bs58 "^5.0.0"
 
-"@web3auth/base@7.0.1", "@web3auth/base@^7.0.0-beta.0", "@web3auth/base@^7.0.1":
+"@web3auth/base@7.0.1", "@web3auth/base@^7.0.1":
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@web3auth/base/-/base-7.0.1.tgz#2116b5de8914ec4c6547a60bf1caf90428bca39f"
   integrity sha512-6ft4XAD37tobOxgkZhideiBMqoVJTpvAvYD0R99IDmpazpIrX8b4RBgwLQ/gIlNmGZhkU1UoTzub19xTWI9h6w==
@@ -1145,10 +1134,10 @@
     "@web3auth/base" "^7.0.1"
     "@web3auth/base-evm-adapter" "^7.0.1"
 
-"@web3auth/modal@7.0.2":
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/@web3auth/modal/-/modal-7.0.2.tgz#cb740b93c5c92012327cdc2842f4c054e7236d9a"
-  integrity sha512-gvMl0phbfIm5E80hPKdpEnG76eXr7j1hxZEjXLt9UqW/DH0qll/yKxuIQcNhTyI6HRlV+kum5W+nxVIyQzzzLQ==
+"@web3auth/modal@7.0.3":
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/@web3auth/modal/-/modal-7.0.3.tgz#6e2e4bbc5b79c1a69783ad401c8efc04e9a02efb"
+  integrity sha512-6jYGOgG5OiFcXv6KR0hPokq6lPkFt7VBH34M9Stij7WyDg8I1S/Qjlx5vKM9rhUP4/d51wNmb77t1rQI+TGsDg==
   dependencies:
     "@web3auth/base" "^7.0.1"
     "@web3auth/base-provider" "^7.0.1"
@@ -1158,24 +1147,12 @@
     "@web3auth/openlogin-adapter" "^7.0.1"
     "@web3auth/phantom-adapter" "^7.0.2"
     "@web3auth/solana-provider" "^7.0.2"
-    "@web3auth/torus-evm-adapter" "^7.0.1"
+    "@web3auth/torus-evm-adapter" "^7.0.3"
     "@web3auth/torus-solana-adapter" "^7.0.2"
     "@web3auth/ui" "^7.0.2"
     "@web3auth/wallet-connect-v2-adapter" "^7.0.2"
 
-"@web3auth/no-modal@7.0.2-beta.0":
-  version "7.0.2-beta.0"
-  resolved "https://registry.yarnpkg.com/@web3auth/no-modal/-/no-modal-7.0.2-beta.0.tgz#ba4194018e3c18906a523fb197ea3ad70186497c"
-  integrity sha512-B3IAogYeo1B/uR1P6Wd8bkYRwC3dXRcUOLqb/HouI8ewNRQkuI4AEQBezWH9y5dovFHdud99bDgNwacnqx9Ibg==
-  dependencies:
-    "@toruslabs/openlogin" "^5.0.3"
-    "@toruslabs/openlogin-jrpc" "^5.0.2"
-    "@toruslabs/openlogin-utils" "^5.0.2"
-    "@web3auth/base" "^7.0.0-beta.0"
-    "@web3auth/base-plugin" "^7.0.0-beta.0"
-    "@web3auth/base-provider" "^7.0.2-beta.0"
-
-"@web3auth/no-modal@^7.0.1":
+"@web3auth/no-modal@7.0.1", "@web3auth/no-modal@^7.0.1":
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@web3auth/no-modal/-/no-modal-7.0.1.tgz#1b8ed4847516473b3f565fec549b3ced6e37a057"
   integrity sha512-1QQwLInofozN4SBRWNcT7d/HNDR0t2H2KVyzkyPQFR601GetBgGD9vSKFO/xpr6SLlGNaQSbVXhVPXf/l3iIHA==
@@ -1187,18 +1164,7 @@
     "@web3auth/base-plugin" "^7.0.1"
     "@web3auth/base-provider" "^7.0.1"
 
-"@web3auth/openlogin-adapter@7.0.2-beta.0":
-  version "7.0.2-beta.0"
-  resolved "https://registry.yarnpkg.com/@web3auth/openlogin-adapter/-/openlogin-adapter-7.0.2-beta.0.tgz#0bf58a8b3f0797ae369e83a9a51e07559f7e00d6"
-  integrity sha512-8uF3YPGvB0QooQw9DQq8DMi5XLgSm0+/iQhsB8cc3AgAFXNQpn4f7jGfuIQF9vqqaAlEIHD8umYkOFx15Ver6Q==
-  dependencies:
-    "@toruslabs/openlogin" "^5.0.3"
-    "@toruslabs/openlogin-utils" "^5.0.2"
-    "@web3auth/base" "^7.0.0-beta.0"
-    "@web3auth/base-provider" "^7.0.2-beta.0"
-    lodash.merge "^4.6.2"
-
-"@web3auth/openlogin-adapter@^7.0.1":
+"@web3auth/openlogin-adapter@7.0.1", "@web3auth/openlogin-adapter@^7.0.1":
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@web3auth/openlogin-adapter/-/openlogin-adapter-7.0.1.tgz#8c47c91d1bf9650f64c1afb2de9dde58e5dda380"
   integrity sha512-dameu4c762P+0MjNryBkrClbPDLxgU0N92iNtGbzHND3ZQILofDxqu6Gfopr915xpwbkk9OdLfx9Ib9ezc4o1A==
@@ -1236,10 +1202,10 @@
     bs58 "^5.0.0"
     json-rpc-random-id "^1.0.1"
 
-"@web3auth/torus-evm-adapter@^7.0.1":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@web3auth/torus-evm-adapter/-/torus-evm-adapter-7.0.1.tgz#e2b70a23b9791810677d3c1b94838a37ec488693"
-  integrity sha512-FpEXoIShHvgSd0O2/Ig/+BmbymQoq5/A1zZl7L4/QR00lyECyXvyL3G0KUiPfQ+4xbDL0lqH1yH+jznCQ3CY2A==
+"@web3auth/torus-evm-adapter@^7.0.3":
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/@web3auth/torus-evm-adapter/-/torus-evm-adapter-7.0.3.tgz#9eb5d3e906f3e1a48c86b0368a90101b13658f30"
+  integrity sha512-t/kw0jdctba2Am2ZARIqGAAbkxi937j6XKQnrX/4xfvd1nZf9LXg9ayV/IyDg9jO6fOXZLW+6RDOyPrKkxoh7Q==
   dependencies:
     "@toruslabs/torus-embed" "^3.0.0"
     "@web3auth/base" "^7.0.1"
@@ -1285,10 +1251,10 @@
     "@web3auth/ethereum-provider" "^7.0.2"
     lodash.merge "^4.6.2"
 
-"@zerodev/sdk@4.0.20":
-  version "4.0.20"
-  resolved "https://registry.yarnpkg.com/@zerodev/sdk/-/sdk-4.0.20.tgz#fb3c548f0635da038dfc4bde0a6b65d60149b6f1"
-  integrity sha512-LmaQOyeWu9aVAZTPq2bpU/TcirvZKbx9bJ+0j/ScmAg8KlA/SsNEvMK/TnRk7bXmfm2BQR93CMpzh1cSo2Dp/Q==
+"@zerodev/sdk@4.0.27":
+  version "4.0.27"
+  resolved "https://registry.yarnpkg.com/@zerodev/sdk/-/sdk-4.0.27.tgz#94277e2b6d21c5abc0284fc2ab4898ab8c240c13"
+  integrity sha512-KcxP2GCtfwUrFiUP/kU78Cc5eSkyiR98BzeaiuSkr/tEOxUf4USIbxRzCy/nV41BjLelLLJUAY+VbEj7jXMJBw==
   dependencies:
     "@alchemy/aa-core" "0.1.0-alpha.23"
     "@alchemy/aa-ethers" "0.1.0-alpha.23"
