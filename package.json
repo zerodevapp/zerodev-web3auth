@@ -1,6 +1,6 @@
 {
   "name": "@zerodevapp/web3auth",
-  "version": "3.2.7",
+  "version": "3.2.8",
   "main": "dist/index.js",
   "files": [
     "dist"
@@ -16,7 +16,7 @@
     "@web3auth/modal": "5.0.1",
     "@web3auth/no-modal": "5.0.1",
     "@web3auth/openlogin-adapter": "5.0.1",
-    "@zerodevapp/sdk": "3.2.8"
+    "@zerodevapp/sdk": "3.2.9"
   },
   "peerDependencies": {
     "ethers": ">=5.5.1",
