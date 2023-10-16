@@ -33,7 +33,6 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
     authenticationProviders: ProjectConfiguration['authenticationProviders'] = []
 
     constructor(projectIds: string[], chainId?: ChainId, zeroDevOptions?: ZeroDevWeb3AuthOptions) {
-        if (ZeroDevWeb3Auth.zeroDevWeb3Auth) return ZeroDevWeb3Auth.zeroDevWeb3Auth
         super(getWeb3AuthConfig(chainId, zeroDevOptions?.web3authOptions))
         this.chainId = chainId
         this.projectIds = projectIds
@@ -133,6 +132,12 @@ class ZeroDevWeb3Auth extends Web3AuthNoModal {
         return this.provider
     }
 
+    static getInstance(projectIds: string[], chainId?: ChainId, zeroDevOptions?: ZeroDevWeb3AuthOptions): ZeroDevWeb3Auth {
+        if (!ZeroDevWeb3Auth.zeroDevWeb3Auth) {
+            ZeroDevWeb3Auth.zeroDevWeb3Auth = new ZeroDevWeb3Auth(projectIds, chainId, zeroDevOptions);
+        }
+        return ZeroDevWeb3Auth.zeroDevWeb3Auth;
+    }
 }
 
 export default ZeroDevWeb3Auth
