@@ -1,6 +1,6 @@
 {
   "name": "@zerodevapp/web3auth",
-  "version": "3.2.8-experimental.6",
+  "version": "3.3.0",
   "main": "dist/index.js",
   "files": [
     "dist"
