@@ -12,18 +12,8 @@ export type ZeroDevWeb3AuthOptions = {
     adapterSettings?: Partial<OpenloginAdapterOptions['adapterSettings']>
 }
 
-export type ZeroDevWeb3AuthConstructor<T> = new (projectIds: string[], chainid?: ChainId, options?: ZeroDevWeb3AuthOptions) => T
-
 export type ZeroDevWeb3AuthInitOptions = {
     onConnect?: (userInfo: Partial<UserInfo>) => Promise<void> | void,
 }
 
-export type ZeroDevWeb3AuthGeneric<T> = T & {
-    connect: (loginProvider: LoginProvider, extra?: {jwt?: string}) => Promise<SafeEventEmitterProvider> | null,
-    init: (options: ZeroDevWeb3AuthInitOptions) => Promise<void>
-    initModal: (options: ZeroDevWeb3AuthInitOptions) => Promise<void>
-}
-
-
-export type ZeroDevWeb3Auth = ZeroDevWeb3AuthGeneric<Web3AuthNoModal>
-export type ZeroDevWeb3AuthWithModal = ZeroDevWeb3AuthGeneric<Web3Auth>
+export type ZeroDevWeb3AuthEvents = 'onConnect'

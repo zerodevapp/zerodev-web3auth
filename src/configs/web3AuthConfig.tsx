@@ -5,6 +5,10 @@ import { CHAIN_NAMESPACES } from '@web3auth/base';
 
 export const getWeb3AuthConfig = (chainId?: keyof typeof CHAIN_ID_TO_NODE, web3authOptions?: Partial<Web3AuthNoModalOptions>) => {
     return {
+        uiConfig: {
+            defaultLanguage: "en", // en, de, ja, ko, zh, es, fr, pt, nl
+            primaryButton: 'socialLogin'
+        },
         chainConfig: chainId ? getChainConfig(chainId) : {
             chainNamespace: CHAIN_NAMESPACES.EIP155,
         },

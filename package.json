@@ -1,6 +1,6 @@
 {
   "name": "@zerodevapp/web3auth",
-  "version": "3.2.8",
+  "version": "3.3.0",
   "main": "dist/index.js",
   "files": [
     "dist"
@@ -11,12 +11,12 @@
     "dev": "tsup src --watch --dts"
   },
   "dependencies": {
-    "@walletconnect/client": "^1.8.0",
-    "@web3auth/base": "5.0.1",
-    "@web3auth/modal": "5.0.1",
-    "@web3auth/no-modal": "5.0.1",
-    "@web3auth/openlogin-adapter": "5.0.1",
-    "@zerodevapp/sdk": "3.2.9"
+    "@web3auth/base": "7.0.1",
+    "@web3auth/modal": "7.0.3",
+    "@web3auth/no-modal": "7.0.1",
+    "@web3auth/openlogin-adapter": "7.0.1",
+    "@web3auth/ethereum-provider": "7.0.2",
+    "@zerodevapp/sdk": "3.2.10"
   },
   "peerDependencies": {
     "ethers": ">=5.5.1",
