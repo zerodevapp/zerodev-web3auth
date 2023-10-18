@@ -18,7 +18,6 @@ class ZeroDevWeb3AuthWithModal extends Web3Auth {
     chainId?: ChainId
 
     constructor(projectIds: string[], chainId?: ChainId, zeroDevOptions?: ZeroDevWeb3AuthOptions) {
-        if (ZeroDevWeb3AuthWithModal.zeroDevWeb3AuthWithModal) return ZeroDevWeb3AuthWithModal.zeroDevWeb3AuthWithModal
         super(getWeb3AuthConfig(chainId, zeroDevOptions?.web3authOptions))
         this.chainId = chainId
         this.projectIds = projectIds
@@ -103,7 +102,13 @@ class ZeroDevWeb3AuthWithModal extends Web3Auth {
             return this.connect()
         }
         return this.provider
+    }
 
+    static getInstance(projectIds: string[], chainId?: ChainId, zeroDevOptions?: ZeroDevWeb3AuthOptions): ZeroDevWeb3AuthWithModal {
+        if (!ZeroDevWeb3AuthWithModal.zeroDevWeb3AuthWithModal) {
+            ZeroDevWeb3AuthWithModal.zeroDevWeb3AuthWithModal = new ZeroDevWeb3AuthWithModal(projectIds, chainId, zeroDevOptions);
+        }
+        return ZeroDevWeb3AuthWithModal.zeroDevWeb3AuthWithModal;
     }
 }
 
