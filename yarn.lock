@@ -1251,10 +1251,10 @@
     "@web3auth/ethereum-provider" "^7.0.2"
     lodash.merge "^4.6.2"
 
-"@zerodev/sdk@4.0.29":
-  version "4.0.29"
-  resolved "https://registry.yarnpkg.com/@zerodev/sdk/-/sdk-4.0.29.tgz#2d64b3876d4d651a544000ff1886ba79812f5801"
-  integrity sha512-RZ6J91Dza87xc3/2iF5mlau8/fDZ/wPZ385F0dvB2TmN7PjvOz0+XtePkKnQDpCTJCdoFy0XBh6LGkmlemSNmw==
+"@zerodev/sdk@4.0.31":
+  version "4.0.31"
+  resolved "https://registry.yarnpkg.com/@zerodev/sdk/-/sdk-4.0.31.tgz#2e27b6be430a1a092ae91e74e4c0dbf3bd15e33e"
+  integrity sha512-uQHHmvu8YID9zWTQ+JIzqNO8axpPkIQjV/G/+8qPJPt6M0pWosR1R98ykNVc5V8AimJq/y3bFLsV+rrybzB7IQ==
   dependencies:
     "@alchemy/aa-core" "0.1.0-alpha.23"
     "@alchemy/aa-ethers" "0.1.0-alpha.23"
