@@ -36,8 +36,8 @@ export const CHAIN_ID_TO_NODE: { [key: number]: string} = {
   100: "https://thrilling-fluent-film.xdai.quiknode.pro/305955cffb9868cdd95b5e3dc9775f20678ad9ac/",
   10200: "https://nd-810-853-201.p2pify.com/e828b09f0d43591de96c297b3f36fffd",
   59144: `https://linea-mainnet.infura.io/v3/${INFURA_API_KEY}`,
-  204: 'opBnb', // TODO: get rpc url
   59140: `https://linea-goerli.infura.io/v3/${INFURA_API_KEY}`,
-  5611: 'opBnb-testnet', // TODO: get rpc url
+  204: 'https://opbnb-mainnet.nodereal.io/v1/dd289ac0e1c941f5a62bfa801d9d3240',
+  // 5611: 'opBnb-testnet',
 }
 export const ZERODEV_CLIENT_ID = process.env.REACT_APP_ZEROKIT_WEB3AUTH_CLIENT_ID ?? 'BEjNZMt6TPboj3TfHM06MP8Yxz7cKQX6eK3KZzVhrIMi7jALcZHxJv5o3fDLM7EL4QfPlf2AV_qe155vyR3QxiU'
