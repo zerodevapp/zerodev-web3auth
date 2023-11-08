@@ -1527,10 +1527,10 @@
     "@account-abstraction/contracts" "^0.6.0"
     dotenv "^16.0.3"
 
-"@zerodevapp/sdk@3.2.10":
-  version "3.2.10"
-  resolved "https://registry.yarnpkg.com/@zerodevapp/sdk/-/sdk-3.2.10.tgz#7242f277987f8b8d526750ad9297d142749ab590"
-  integrity sha512-rXXwXnwytoG/QIjIh0b37k0e6K/Z3EEUgnDQ2LVI9CPmW0TfEwmG2htt3tWJmdWxrjXQhRuw+DwBsVFP309vDw==
+"@zerodevapp/sdk@3.2.11":
+  version "3.2.11"
+  resolved "https://registry.yarnpkg.com/@zerodevapp/sdk/-/sdk-3.2.11.tgz#f3d5eaca51644a5347ac61f87eebfdad755d7e0e"
+  integrity sha512-FeH1uKQbHEhCxyTy0xPcJKd99e0udXzGClZXA2T51G6ZYoKq2qntfm+0zdBVl8Ev/XIDkAtnQdeJNCm4+iaqdw==
   dependencies:
     "@account-abstraction/contracts" "^0.6.0"
     "@account-abstraction/utils" "^0.4.0"
